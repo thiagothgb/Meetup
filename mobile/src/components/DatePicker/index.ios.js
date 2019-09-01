@@ -1,10 +1,10 @@
 import React, {useState, useMemo} from 'react';
 import {DatePickerIOS} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {format} from 'date-fns';
+import {format, addDays, subDays, isSameDay} from 'date-fns';
 import pt from 'date-fns/locale/pt-BR';
 import PropTypes from 'prop-types';
-import {Container, DateButton, DateText, Picker} from './styles';
+import {Container, Button, DateText, Picker} from './styles';
 
 export default function DatePicker({date, onChange}) {
   const [opened, setOpened] = useState(false);
@@ -13,13 +13,28 @@ export default function DatePicker({date, onChange}) {
     return format(date, "dd 'de' MMMM", {locale: pt});
   }, [date]);
 
+  function handleNextDay() {
+    onChange(addDays(date, 1));
+  }
+
+  function handlePreviusDay() {
+    if (isSameDay(date, new Date())) {
+      return;
+    }
+    onChange(subDays(date, 1));
+  }
+
   return (
     <Container>
-      <Icon name="event" color="#fff" size={20} />
-      <DateButton onPress={() => setOpened(!opened)}>
+      <Button onPress={handlePreviusDay}>
+        <Icon name="keyboard-arrow-left" color="#fff" size={30} />
+      </Button>
+      <Button onPress={() => setOpened(!opened)}>
         <DateText>{dateFormatted}</DateText>
-      </DateButton>
-      <Icon name="event" color="#fff" size={20} />
+      </Button>
+      <Button onPress={handleNextDay}>
+        <Icon name="keyboard-arrow-right" color="#fff" size={30} />
+      </Button>
 
       {opened && (
         <Picker>
